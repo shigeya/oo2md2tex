@@ -1,5 +1,10 @@
 module MarkdownToTeX
   class Renderer < Redcarpet::Render::Base
+    HEADER_TYPE = {
+      1 => "section",
+      2 => "subection",
+      3 => "subsubsection"
+    }
     # Block-level calls
     # If the return value of the method is `nil`, the block
     # will be skipped.
@@ -20,9 +25,19 @@ module MarkdownToTeX
     
     ## block_quote(quote)
     ## block_html(raw_html)
-    ## header(text, header_level)
+    def header(text, header_level)
+      "\n\n\\#{HEADER_TYPE[header_level]}{#{text}}\n"
+    end
+    
     ## hrule()
-    ## list(contents, list_type)
+
+    def list(contents, list_type)
+      environment = case list_type
+                      when "ordered" then "enumerated"
+                      when "unordered" then "itemize"
+                      end
+      wrap_environment("itemize", contents)
+    end
 
     def list_item(text, list_type)
       "\\item #{text}\n"
@@ -43,7 +58,7 @@ module MarkdownToTeX
     ## autolink(link, link_type)
     ## codespan(code)
     def codespan(code)
-      "\verb+#{code}+"
+      "\\verb+#{code}+"
     end
     ## double_emphasis(text)
     ## emphasis(text)
