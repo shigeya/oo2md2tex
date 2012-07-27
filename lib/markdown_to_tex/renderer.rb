@@ -14,14 +14,24 @@ module MarkdownToTeX
     #     end
     #   end
     #
-    ## block_code(code, language)
+    def block_code(code, language)
+      wrap_environment("verbatim", code)
+    end
+    
     ## block_quote(quote)
     ## block_html(raw_html)
     ## header(text, header_level)
     ## hrule()
     ## list(contents, list_type)
-    ## list_item(text, list_type)
-    ## paragraph(text)
+
+    def list_item(text, list_type)
+      "\\item #{text}\n"
+    end
+
+    def paragraph(text)
+      text+"\n"
+    end
+    
     ## table(header, body)
     ## table_row(content)
     ## table_cell(content, alignment)
@@ -32,12 +42,22 @@ module MarkdownToTeX
     # the contents of the span will be copied verbatim
     ## autolink(link, link_type)
     ## codespan(code)
+    def codespan(code)
+      "\verb+#{code}+"
+    end
     ## double_emphasis(text)
     ## emphasis(text)
     ## image(link, title, alt_text)
-    ## linebreak()
+    def linebreak()
+      "\n%\n"
+    end
+
     ## link(link, title, content)
-    ## raw_html(raw_html)
+
+    def raw_html(raw_html)
+      raw_html
+    end
+    
     ## triple_emphasis(text)
     ## strikethrough(text)
     ## superscript(text)
@@ -49,13 +69,13 @@ module MarkdownToTeX
     # Header of the document
     # Rendered before any another elements
     def doc_header()
-      "start"
+      "% start-of-output\n"
     end
     
     # Footer of the document
     # Rendered after all the other elements
     def doc_footer()
-      "end"
+      "\n% end-of-output"
     end
     
     # Pre/post-process
@@ -63,6 +83,14 @@ module MarkdownToTeX
     # document before or after the rendering process begins
     ## preprocess(full_document)
     ## postprocess(full_document)
+    
+    
+  private
+    def wrap_environment(environment, text)
+      "\\begin{#{environment}}\n"+
+      text +
+      "\\end{#{environment}}\n"
+    end
 
   end
 end
