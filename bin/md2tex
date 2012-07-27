@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# -*- mode: ruby -*-
+
+$script_base_dir = File.dirname(__FILE__)+"/../lib"
+$:.unshift($script_base_dir)
+
+require 'redcarpet'
+require 'markdown_to_tex'
+
+renderer = Redcarpet::Markdown.new(MarkdownToTeX::Renderer)
+
+
+ARGV.each do |f|
+  i = File.read(f) 
+  s = renderer.render(i)
+  puts s
+end
