@@ -2,6 +2,13 @@
 
 Markdown to TeX/LatTeX converter
 
+# Requirements
+
+Ruby 1.9 and gems:
+
+- [Redcarpet](https://github.com/tanoku/redcarpet/)
+- [Sundown](https://github.com/tanoku/sundown)
+
 
 # License
 
