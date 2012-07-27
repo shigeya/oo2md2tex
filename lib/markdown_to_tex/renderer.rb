@@ -55,10 +55,13 @@ module MarkdownToTeX
     # A return value of `nil` will not output any data
     # If the method for a document element is not implemented,
     # the contents of the span will be copied verbatim
-    ## autolink(link, link_type)
-    ## codespan(code)
+    def autolink(link, link_type)
+      "{{autolink:<#{link}>, title:<#{title}>, content:<#{content}>}}"
+    end
+
     def codespan(code)
-      "\\verb+#{code}+"
+      qchar = if code =~ /\+/ then "!" else "+" end
+      "\\verb#{qchar}#{code}#{qchar}"
     end
     ## double_emphasis(text)
     ## emphasis(text)
@@ -67,7 +70,9 @@ module MarkdownToTeX
       "\n%\n"
     end
 
-    ## link(link, title, content)
+    def link(link, title, content)
+      "#{content}\\nobreak\\footnote{\\url{#{link}}}"
+    end
 
     def raw_html(raw_html)
       raw_html

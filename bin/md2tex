@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # -*- mode: ruby -*-
 
+if RUBY_VERSION >= "1.9"  # encoding only supported in Ruby 1.9.x
+  Encoding.default_external = "UTF-8"
+end
+
 $script_base_dir = File.dirname(__FILE__)+"/../lib"
 $:.unshift($script_base_dir)
 
