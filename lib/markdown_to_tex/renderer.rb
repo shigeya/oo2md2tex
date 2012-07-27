@@ -44,7 +44,7 @@ module MarkdownToTeX
     end
 
     def paragraph(text)
-      text+"\n"
+      ParagraphProcessor.process(text)+"\n"
     end
     
     ## table(header, body)
