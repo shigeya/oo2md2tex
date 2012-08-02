@@ -16,11 +16,18 @@ Basically, `md2tex`  can output either TeX or LaTeX text.
 
 ## Section name interpretation
 
-Markdown's section titles are mapped directory into LaTeX's counterpart.
+Markdown's section titles are mapped directly into LaTeX's counterpart.
 
-Also, if a section name may include `[label]` at the end of title for the label
+If a section name may include `[label]` at the end of title for the label
 for the given section name. The output will be `\label{LABEL}` appended to the
 section name.
+
+LaTeX section command accepts optional _shorter_ title use for the
+table-of-contents. you can specify this by using vertical bar like
+this:
+
+    # longer_title | shorter_title [LABEL]
+
 
 ## Comments
 
@@ -62,3 +69,4 @@ Labels references are denoted by `[label-name]`. For labels inside the document
 - `[prev:sec]` or `[previous:sec]`
 - `[prev:subsec]` or `[prev:subsec]`
 - `[prev:subsubsec]` or `[previous:subsubsec]`
+
