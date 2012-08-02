@@ -11,11 +11,10 @@ $:.unshift($script_base_dir)
 require 'redcarpet'
 require 'markdown_to_tex'
 
-renderer = Redcarpet::Markdown.new(MarkdownToTeX::Renderer)
-
+processor = MarkdownToTeX::Processor.new
 
 ARGV.each do |f|
   i = File.read(f) 
-  s = renderer.render(i)
+  s = processor.process(i)
   puts s
 end
