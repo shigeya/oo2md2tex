@@ -55,9 +55,10 @@ module MarkdownToTeX
     end
 
     def self.reference(text)
-      text.gsub(/\[([^\]]+)\]/) { self.ref_name_map_cite($1);}.
+      text.
            gsub(/\[(this|prev|next):(chap|part|sec|subsec|subsubsec|fig|table)\]/) { "\\#{$1}#{$2}KEY{}" }.
-           gsub(/\[((chap|part|sec|subsec|subsubsec|fig|table):[^\]]+)\]/) { "\\#{$2}REF{#{self.ref_name_map($1)}}" }
+           gsub(/\[((chap|part|sec|subsec|subsubsec|fig|table):[^\]]+)\]/) { "\\#{$2}REF{#{self.ref_name_map($1)}}" }.
+           gsub(/\[([^\]]+)\]/) { self.ref_name_map_cite($1);}
     end
 
     def self.label_split(s)
