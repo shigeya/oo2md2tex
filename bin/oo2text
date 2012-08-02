@@ -10,20 +10,23 @@ module OmniOutliner
   class Document < Nokogiri::XML::SAX::Document
     def initialize
       @in_item = false
+      @in_style = false
       @str = ""
       super
     end
     
     def characters(s)
-      @str += s if @in_item
+      @str += s if @in_item && !@in_style
     end
     
     def start_element(name, attrs)
       @in_item = true if name == "item"
+      @in_style = true if name == "style"
     end
   
     def end_element(name)
       @in_item = false if name == "item"
+      @in_style = false if name == "style"
       if name == "values"
         @str.gsub(/\n/, '')
         puts @str
