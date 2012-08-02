@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'optparse'
+require 'nokogiri'
+require 'zlib'
+
+module OmniOutliner
+
+  class Document < Nokogiri::XML::SAX::Document
+    def initialize
+      @in_item = false
+      @str = ""
+      super
+    end
+    
+    def characters(s)
+      @str += s if @in_item
+    end
+    
+    def start_element(name, attrs)
+      @in_item = true if name == "item"
+    end
+  
+    def end_element(name)
+      @in_item = false if name == "item"
+      if name == "values"
+        @str.gsub(/\n/, '')
+        puts @str
+        @str = ""
+      end
+    end
+  end
+  
+  class Parser < Nokogiri::XML::SAX::Parser
+    def initialize(fn)
+      @file = nil
+      if fn =~ /\.oo3$/
+        fn = "#{fn}/contents.xml"
+        @file = Zlib::GzipReader.new(File.open(fn))
+      else 
+        @file = File.open(fn, rm)
+      end
+      super(Document.new)
+    end
+    
+    def parse
+      super(@file)
+    end
+  end
+
+end
+
+ARGV.options do |o|
+  o.banner = "ruby #{$0} [options] OmniOutliner-Document-Package"
+  o.separator "Options:"
+  o.parse!
+end
+
+ARGV.each do |file|
+  parser = OmniOutliner::Parser.new(file)
+  parser.parse
+end
