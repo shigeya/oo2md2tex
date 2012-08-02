@@ -1,10 +1,5 @@
 module MarkdownToTeX
   class Renderer < Redcarpet::Render::Base
-    HEADER_TYPE = {
-      1 => "section",
-      2 => "subection",
-      3 => "subsubsection"
-    }
     # Block-level calls
     # If the return value of the method is `nil`, the block
     # will be skipped.
@@ -26,7 +21,7 @@ module MarkdownToTeX
     ## block_quote(quote)
     ## block_html(raw_html)
     def header(text, header_level)
-      "\n\n\\#{HEADER_TYPE[header_level]}{#{text}}\n"
+      TextProcessor.process_header(text, header_level)
     end
     
     ## hrule()
