@@ -9,7 +9,7 @@ Markdown to TeX/LaTeX converter
 Ruby 1.9 and gems:
 
 - [Redcarpet](https://github.com/vmg/redcarpet/)
-
+- nokogiri and zlib for OmniOutliner file handling
 
 # Scripts
 
