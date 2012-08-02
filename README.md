@@ -1,13 +1,25 @@
 # md2tex
 
-Markdown to TeX/LatTeX converter
+Markdown to TeX/LaTeX converter
+
+(including OmniOutliner v3 file to text script)
 
 # Requirements
 
 Ruby 1.9 and gems:
 
-- [Redcarpet](https://github.com/tanoku/redcarpet/)
-- [Sundown](https://github.com/tanoku/sundown)
+- [Redcarpet](https://github.com/vmg/redcarpet/)
+
+
+# Scripts
+
+- `md2tex` convert slightly extended Markdown text file into TeX.
+  The extension described in `Format.md`
+
+- `oo2text` extract [OmniOutliner][oo] v3 file as text file
+
+[oo]: http://www.omnigroup.com/omnioutliner
+
 
 
 # License
