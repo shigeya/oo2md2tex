@@ -46,12 +46,20 @@ module MarkdownToTeX
       }
     end
 
-  
     def process(text)
       @renderer = Redcarpet::Markdown.new(MarkdownToTeX::Renderer)
       TextProcessor.process_final(@renderer.render(text), @macros)
     end
     
+    def job_signature; <<-EOS.gsub(/^\s+%/, '%')
+      % oo-tex.rb run at #{@run_stamp}
+      % description: #{@git_describe}
+      % revision: #{@git_wd_hash_long}
+      % commit log:
+      % #{@git_commit_line}
+      EOS
+    end
+
   end
 
 end

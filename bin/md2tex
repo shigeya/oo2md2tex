@@ -16,5 +16,6 @@ processor = MarkdownToTeX::Processor.new
 ARGV.each do |f|
   i = File.read(f) 
   s = processor.process(i)
+  puts processor.job_signature
   puts s
 end
