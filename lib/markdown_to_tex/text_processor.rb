@@ -8,6 +8,7 @@ module MarkdownToTeX
 
     # Process a paragraph
     def self.process_paragraph(text)
+      text.gsub!(/\(\((.*)\)\)/, '\\ITEM{\1}') # description format
       self.reference(text)
     end
 
