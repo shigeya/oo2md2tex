@@ -24,9 +24,10 @@ end
 
 all.gsub!(/%.*/, '')
 all.gsub!(/\s+/, ' ')
+all.gsub!(/\\(begin|end){[^}]+}/, '')
 all.gsub!(/\\(LL|REP|DEL|REPX|DELX)[^}]+/, '')
 all.gsub!(/\\([A-Za-z]+)/, '')
 all.gsub!(/L:[A-Za-z1-9]+/, '')
 all.gsub!(/\s+/, '')
 all.gsub!(/\{|\}/, '')
-STDERR.puts "!! Text length: #{all.size} chars"
+puts "% Text length: #{all.size} chars"
