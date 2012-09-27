@@ -13,9 +13,20 @@ require 'markdown_to_tex'
 
 processor = MarkdownToTeX::Processor.new
 
+all = ""
 ARGV.each do |f|
   i = File.read(f) 
   s = processor.process(i)
   puts processor.job_signature
   puts s
+  all += s
 end
+
+all.gsub!(/%.*/, '')
+all.gsub!(/\s+/, ' ')
+all.gsub!(/\\(LL|REP|DEL|REPX|DELX)[^}]+/, '')
+all.gsub!(/\\([A-Za-z]+)/, '')
+all.gsub!(/L:[A-Za-z1-9]+/, '')
+all.gsub!(/\s+/, '')
+all.gsub!(/\{|\}/, '')
+STDERR.puts "!! Text length: #{all.size} chars"
