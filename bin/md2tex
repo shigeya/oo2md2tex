@@ -1,5 +1,20 @@
 #!/usr/bin/env ruby
 # -*- mode: ruby -*-
+#
+#    Copyright (c)2012 Shigeya Suzuki
+#
+#    Permission to use, copy, modify, and/or distribute this software for any
+#    purpose with or without fee is hereby granted, provided that the above
+#    copyright notice and this permission notice appear in all copies.
+#
+#    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+#    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+#    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+#    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+#    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+#    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+#    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
 
 if RUBY_VERSION >= "1.9"  # encoding only supported in Ruby 1.9.x
   Encoding.default_external = "UTF-8"
@@ -25,9 +40,9 @@ end
 all.gsub!(/%.*/, '')
 all.gsub!(/\s+/, ' ')
 all.gsub!(/\\(begin|end){[^}]+}/, '')
-all.gsub!(/\\(LL|REP|DEL|REPX|DELX)[^}]+/, '')
+#all.gsub!(/\\(LL|REP|DEL|REPX|DELX)[^}]+/, '')
 all.gsub!(/\\([A-Za-z]+)/, '')
-all.gsub!(/L:[A-Za-z1-9]+/, '')
+#all.gsub!(/L:[A-Za-z1-9]+/, '')
 all.gsub!(/\s+/, '')
 all.gsub!(/\{|\}/, '')
 puts "% Text length: #{all.size} chars"
