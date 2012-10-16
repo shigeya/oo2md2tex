@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'oo2md2tex'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.date        = '2012-10-16'
   s.summary     = "oo2text and md2tex"
   s.description = "A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner"
@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
                      bin/ja-ten-maru-normalize]
   s.homepage    = 'http://github.com/shigeya/oo2md2tex'
   s.require_paths = %w[lib]
-  s.executables = ["oo2text","md2tex"]
+  s.executables = ["oo2text","md2tex","ja-ten-maru-normalize"]
   s.extra_rdoc_files = %w[Format.md]
   s.license = 'ISC'
   s.required_ruby_version = '>= 1.9'
