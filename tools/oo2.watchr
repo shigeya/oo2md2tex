@@ -32,6 +32,14 @@ def clear_screen
     puts "-" * 80
 end
 
+# using terminal-notifier make use of Mountain Lion Notification Service
+# install it with: gem install terminal-notifier
+def notify(success, message)
+  title = "oo2md2tex run " + (success ? "OK" : "Failed")
+  options = "-message '#{message}' -title '#{title}'"
+  system "terminal-notifier #{options} &"
+end
+
 def growl(success, message)
   growlnotify = `which growlnotify`.chomp
   title = "Make run " + (success ? "OK" : "Failed")
@@ -59,7 +67,7 @@ def make(target = "")
   result = run(%Q(make #{target}))
   end_time = Time.now
   elapsed = end_time - start_time
-  growl result, "Elapsed #{elapsed} secs"
+  notify result, "Elapsed #{elapsed} secs"
   puts "=> " + (result == true ? "Success" : "Failure")
   result
 end
