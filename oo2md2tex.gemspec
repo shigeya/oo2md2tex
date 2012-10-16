@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'oo2md2tex'
-  s.version     = '0.0.1'
-  s.date        = '2012-10-11'
+  s.version     = '0.0.2'
+  s.date        = '2012-10-16'
   s.summary     = "oo2text and md2tex"
   s.description = "A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner"
   s.authors     = ["Shigeya Suzuki"]
@@ -11,7 +11,8 @@ Gem::Specification.new do |s|
                      lib/markdown_to_tex/text_processor.rb
                      lib/markdown_to_tex.rb
                      bin/oo2text
-                     bin/md2tex]
+                     bin/md2tex
+                     bin/ja-ten-maru-normalize]
   s.homepage    = 'http://github.com/shigeya/oo2md2tex'
   s.require_paths = %w[lib]
   s.executables = ["oo2text","md2tex"]
