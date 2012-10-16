@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- mode: ruby -*-
+# -*- coding: utf-8 -*-
 #
 #    Copyright (c)2012 Shigeya Suzuki
 #
@@ -23,10 +23,26 @@ end
 $script_base_dir = File.dirname(__FILE__)+"/../lib"
 $:.unshift($script_base_dir)
 
+require 'optparse'
 require 'redcarpet'
 require 'markdown_to_tex'
 
-processor = MarkdownToTeX::Processor.new
+#####
+
+opts = {
+  :git => true
+}
+
+ARGV.options do |o|
+  o.banner = "#{$0} [options] [Markdown_File(s)]"
+  o.separator "Options:"
+  o.on("--no-git", "-G", "without running git") { opts[:git] = false }
+  o.parse!
+end
+
+#####
+
+processor = MarkdownToTeX::Processor.new(opts)
 
 all = ""
 ARGV.each do |f|
