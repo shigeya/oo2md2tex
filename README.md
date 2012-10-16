@@ -29,6 +29,8 @@ Using following two scripts convert Markdown formatted (outlined) OmniOutliner f
 
 [oo]: http://www.omnigroup.com/omnioutliner
 
+- `ja-ten-maru-normalize` is a utility script to normalize Japanse multibyte comma and periods.
+
 
 # Requirements
 
