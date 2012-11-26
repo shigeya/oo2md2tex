@@ -50,6 +50,16 @@ Multiple citations are allowed inside a bracket like this: `[cite_a, cite_b, cit
 
 Note that, writing citation with `[cite_a][cite_b]` is confusing to use with regard to Markdown syntax. Either separating these two with `[cite_a]\relax[\cite_b]` or such trick may be possible.
 
+## Backslash handling caution
+
+Markdown provides backslash escapes for the special characters. Backslash with
+following letter passed as is. Thus, if you want to use special characters, 
+you need to use backslash to escape. Note that if you want to use backslash itself,
+you need to escape it by backslash too, so, if you want to put a line break
+with two backslashes, you need four backslashes. Plan to have some automatic
+escape when converting OmniOutliner file into Markdown, but is not available for now.
+
+
 ### Label format
 
 Labels references are denoted by `[label-name]`. For labels inside the document
