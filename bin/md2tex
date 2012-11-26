@@ -44,14 +44,10 @@ end
 
 processor = MarkdownToTeX::Processor.new(opts)
 
-all = ""
-ARGV.each do |f|
-  i = File.read(f) 
-  s = processor.process(i)
-  puts processor.job_signature
-  puts s
-  all += s
-end
+all = processor.process(ARGF.read)
+
+puts processor.job_signature
+puts all
 
 all.gsub!(/%.*/, '')
 all.gsub!(/\s+/, ' ')
