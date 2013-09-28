@@ -37,6 +37,12 @@ module OmniOutliner
     def start_element(name, attrs)
       @in_item = true if name == "item"
       @in_style = true if name == "style"
+      if name == "cell"
+        # if it is a hyperlink, use name part as part of output
+        if n = attrs.find{|a| a[0] == "name"}
+          @str += n[1]
+        end
+      end
     end
   
     def end_element(name)
