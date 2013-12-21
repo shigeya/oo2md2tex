@@ -30,12 +30,13 @@ require 'markdown_to_tex'
 #####
 
 opts = {
-  :git => true
+  :git => false
 }
 
 ARGV.options do |o|
   o.banner = "#{$0} [options] [Markdown_File(s)]"
   o.separator "Options:"
+  o.on("--git", "-g", "without running git") { opts[:git] = true }
   o.on("--no-git", "-G", "without running git") { opts[:git] = false }
   o.parse!
 end
@@ -52,9 +53,7 @@ puts all
 all.gsub!(/%.*/, '')
 all.gsub!(/\s+/, ' ')
 all.gsub!(/\\(begin|end){[^}]+}/, '')
-#all.gsub!(/\\(LL|REP|DEL|REPX|DELX)[^}]+/, '')
 all.gsub!(/\\([A-Za-z]+)/, '')
-#all.gsub!(/L:[A-Za-z1-9]+/, '')
 all.gsub!(/\s+/, '')
 all.gsub!(/\{|\}/, '')
 puts "% Text length: #{all.size} chars"
