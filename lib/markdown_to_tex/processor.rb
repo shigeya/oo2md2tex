@@ -70,13 +70,16 @@ module MarkdownToTeX
       TextProcessor.process_final(@renderer.render(text), @macros)
     end
     
-    def job_signature; <<-EOS.gsub(/^\s+%/, '%')
-      % oo-tex.rb run at #{@run_stamp}
-      % description: #{@git_describe}
-      % revision: #{@git_wd_hash_long}
-      % commit log:
-      % #{@git_commit_line}
-      EOS
+    def job_signature
+      s = []
+      s << "% md2tex run at #{@run_stamp}"
+      s << "% description: #{@git_describe}" if @git_describe
+      s << "% revision: #{@git_wd_hash_long}" if @git_wd_hash_long
+      if @git_commit_line
+        s << "% commit log:"
+        s << "% #{@git_commit_line}"
+      end
+      s.join("\n")+"\n"
     end
 
   end
