@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'oo2md2tex'
-  s.version     = '0.0.8'
-  s.date        = '2014-06-28'
+  s.version     = '0.0.9'
+  s.date        = '2016-05-11'
   s.summary     = "oo2text and md2tex"
   s.description = "A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner"
   s.authors     = ["Shigeya Suzuki"]
@@ -22,5 +22,5 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9'
   s.add_runtime_dependency 'redcarpet', '~> 2.1'
   s.add_runtime_dependency 'nokogiri', '~> 1.5'
-  
+
 end

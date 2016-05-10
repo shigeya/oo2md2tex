@@ -54,7 +54,7 @@ end
 #####
 
 def text_tweak(str, opts)
-  str.tr!('、。', '，. ') if opts[:ja_comma_subst_cp]
+  str.tr!('、。', '，．') if opts[:ja_comma_subst_cp]
   str.tr!('，. ', '、。') if opts[:ja_comma_subst_tm]
 	str
 end
