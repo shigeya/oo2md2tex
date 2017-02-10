@@ -46,7 +46,7 @@ module OmniOutliner
         end
       end
     end
-  
+
     def end_element(name)
       @in_column = false if name == "column"
       @in_item = false if name == "item"
@@ -62,7 +62,7 @@ module OmniOutliner
       end
     end
   end
-  
+
   class Parser < Nokogiri::XML::SAX::Parser
     def initialize(fn)
       @file = nil
@@ -79,7 +79,7 @@ module OmniOutliner
       end
       super(Document.new)
     end
-    
+
     def parse
       super(@file)
     end
