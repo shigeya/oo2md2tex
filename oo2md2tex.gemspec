@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'oo2md2tex'
-  s.version     = '0.0.9'
-  s.date        = '2016-05-11'
+  s.version     = '0.0.10'
+  s.date        = '2017-02-10'
   s.summary     = "oo2text and md2tex"
   s.description = "A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner"
   s.authors     = ["Shigeya Suzuki"]
