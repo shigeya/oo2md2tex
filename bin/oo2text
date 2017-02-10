@@ -24,6 +24,8 @@ module OmniOutliner
 
   class Document < Nokogiri::XML::SAX::Document
     def initialize
+      @in_column = false
+      @in_lit = false
       @in_item = false
       @in_style = false
       @str = ""
