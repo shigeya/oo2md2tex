@@ -29,14 +29,16 @@ module OmniOutliner
       @str = ""
       super
     end
-    
+
     def characters(s)
-      @str += s if @in_item && !@in_style
+      @str += s if @in_lit && (!@in_style && !@in_column)
     end
-    
+
     def start_element(name, attrs)
+      @in_column = true if name == "column"
       @in_item = true if name == "item"
       @in_style = true if name == "style"
+      @in_lit = true if name == "lit"
       if name == "cell"
         # if it is a hyperlink, use name part as part of output
         if n = attrs.find{|a| a[0] == "name"}
@@ -46,8 +48,13 @@ module OmniOutliner
     end
   
     def end_element(name)
+      @in_column = false if name == "column"
       @in_item = false if name == "item"
       @in_style = false if name == "style"
+      if name == "lit"
+        @str += "\n"
+        @in_lit = false
+      end
       if name == "values"
         @str.gsub(/\n/, '')
         puts @str
