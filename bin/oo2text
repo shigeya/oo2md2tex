@@ -75,7 +75,7 @@ module OmniOutliner
           @file = @basefile
         end
       else
-        @file = File.open(fn, rm)
+        @file = File.open(fn)
       end
       super(Document.new)
     end
