@@ -61,8 +61,13 @@ module OmniOutliner
       @file = nil
       if fn =~ /\.oo3$/
         fn = "#{fn}/contents.xml"
-        @file = Zlib::GzipReader.new(File.open(fn))
-      else 
+        begin
+          @basefile = File.open(fn)
+          @file = Zlib::GzipReader.new(File.open(fn))
+        rescue Zlib::GzipFile::Error
+          @file = @basefile
+        end
+      else
         @file = File.open(fn, rm)
       end
       super(Document.new)
