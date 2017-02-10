@@ -63,7 +63,7 @@ module OmniOutliner
         fn = "#{fn}/contents.xml"
         begin
           @basefile = File.open(fn)
-          @file = Zlib::GzipReader.new(File.open(fn))
+          @file = Zlib::GzipReader.new(@basefile)
         rescue Zlib::GzipFile::Error
           @file = @basefile
         end
