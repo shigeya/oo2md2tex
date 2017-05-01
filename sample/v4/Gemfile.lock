@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    mini_portile2 (2.1.0)
+    nokogiri (1.7.1)
+      mini_portile2 (~> 2.1.0)
+    oo2md2tex (0.0.12)
+      nokogiri (~> 1.5)
+      redcarpet (~> 2.1)
+    redcarpet (2.3.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  nokogiri
+  oo2md2tex
+  redcarpet
+
+BUNDLED WITH
+   1.14.6

@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'oo2md2tex'
+
+gem 'redcarpet'
+gem 'nokogiri'
