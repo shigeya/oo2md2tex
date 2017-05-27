@@ -19,73 +19,145 @@
 require 'optparse'
 require 'nokogiri'
 require 'zlib'
+require 'zip'
+require 'stringio'
 
 module OmniOutliner
 
-  class Document < Nokogiri::XML::SAX::Document
-    def initialize
-      @in_column = false
-      @in_lit = false
-      @in_item = false
-      @in_style = false
-      @str = ""
-      super
-    end
+  class V3
+    class Document < Nokogiri::XML::SAX::Document
+      def initialize
+        @in_column = false
+        @in_lit = false
+        @in_item = false
+        @in_style = false
+        @str = ""
+        super
+      end
 
-    def characters(s)
-      @str += s if @in_lit && (!@in_style && !@in_column)
-    end
+      def characters(s)
+        @str += s if @in_lit && (!@in_style && !@in_column)
+      end
 
-    def start_element(name, attrs)
-      @in_column = true if name == "column"
-      @in_item = true if name == "item"
-      @in_style = true if name == "style"
-      @in_lit = true if name == "lit"
-      if name == "cell"
-        # if it is a hyperlink, use name part as part of output
-        if n = attrs.find{|a| a[0] == "name"}
-          @str += n[1]
+      def start_element(name, attrs)
+        @in_column = true if name == "column"
+        @in_item = true if name == "item"
+        @in_style = true if name == "style"
+        @in_lit = true if name == "lit"
+        if name == "cell"
+          # if it is a hyperlink, use name part as part of output
+          if n = attrs.find{|a| a[0] == "name"}
+            @str += n[1]
+          end
+        end
+      end
+
+      def end_element(name)
+        @in_column = false if name == "column"
+        @in_item = false if name == "item"
+        @in_style = false if name == "style"
+        if name == "lit"
+          @str += "\n"
+          @in_lit = false
+        end
+        if name == "values"
+          @str.gsub(/\n/, '')
+          puts @str
+          @str = ""
         end
       end
     end
 
-    def end_element(name)
-      @in_column = false if name == "column"
-      @in_item = false if name == "item"
-      @in_style = false if name == "style"
-      if name == "lit"
-        @str += "\n"
-        @in_lit = false
-      end
-      if name == "values"
-        @str.gsub(/\n/, '')
-        puts @str
-        @str = ""
-      end
-    end
-  end
-
-  class Parser < Nokogiri::XML::SAX::Parser
-    def initialize(fn)
-      @file = nil
-      if fn =~ /\.oo3$/
-        fn = "#{fn}/contents.xml"
-        begin
-          @file = Zlib::GzipReader.new(File.open(fn))
-        rescue Zlib::GzipFile::Error
+    class Parser < Nokogiri::XML::SAX::Parser
+      def initialize(fn)
+        @file = nil
+        if fn =~ /\.oo3$/
+          fn = "#{fn}/contents.xml"
+          begin
+            @file = Zlib::GzipReader.new(File.open(fn))
+          rescue Zlib::GzipFile::Error
+            @file = File.open(fn)
+          end
+        else
           @file = File.open(fn)
         end
-      else
-        @file = File.open(fn)
+        super(Document.new)
       end
-      super(Document.new)
+
+      def parse
+        super(@file)
+      end
+    end
+  end # v3
+
+  class V5
+    class Document < Nokogiri::XML::SAX::Document
+      def initialize
+        @in_column = false
+        @in_lit = false
+        @in_item = false
+        @in_style = false
+        @str = ""
+        super
+      end
+
+      def characters(s)
+        @str += s if @in_lit && (!@in_style && !@in_column)
+      end
+
+      def start_element(name, attrs)
+        @in_column = true if name == "column"
+        @in_item = true if name == "item"
+        @in_style = true if name == "style"
+        @in_lit = true if name == "lit"
+        if name == "cell"
+          # if it is a hyperlink, use name part as part of output
+          if n = attrs.find{|a| a[0] == "name"}
+            @str += n[1]
+          end
+        end
+      end
+
+      def end_element(name)
+        @in_column = false if name == "column"
+        @in_item = false if name == "item"
+        @in_style = false if name == "style"
+        if name == "lit"
+          @str += "\n"
+          @in_lit = false
+        end
+        if name == "values"
+          @str.gsub(/\n/, '')
+          puts @str
+          @str = ""
+        end
+      end
     end
 
-    def parse
-      super(@file)
-    end
-  end
+    class Parser < Nokogiri::XML::SAX::Parser
+      def initialize(fn)
+        @file = nil
+        if fn =~ /\.ooutline$/
+          begin
+            @contents = nil
+            @editors = nil
+            Zip::File.open(fn) do |file|
+              @contents = file.read("contents.xml")
+              @editors = file.read("editors.xml")
+            end
+            @file = StringIO.new(@contents) if @contents
+          rescue Zlib::GzipFile::Error
+            @file = ""
+          end
+        end
+        super(Document.new)
+      end
 
+      def parse
+        super(@file) if @file
+      end
+    end
+  end # v3
 end
 
 ARGV.options do |o|
@@ -95,6 +167,13 @@ ARGV.options do |o|
 end
 
 ARGV.each do |file|
-  parser = OmniOutliner::Parser.new(file)
+  if file =~ /\.oo3/
+    parser = OmniOutliner::V3::Parser.new(file)
+  elsif file =~ /\.ooutline/
+    parser = OmniOutliner::V5::Parser.new(file)
+  else
+    STDERR.puts "Can't open #{file}"
+    exit 1
+  end
   parser.parse
 end
