@@ -4,3 +4,4 @@ gem 'oo2md2tex'
 
 gem 'redcarpet'
 gem 'nokogiri'
+gem 'rubyzip', '>= 1.0.0'
