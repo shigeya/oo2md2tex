@@ -21,6 +21,8 @@ require 'nokogiri'
 require 'zlib'
 require 'zip'
 require 'stringio'
+require 'awesome_print'
+require 'pry-byebug'
 
 module OmniOutliner
 
@@ -91,6 +93,23 @@ module OmniOutliner
   end # v3
 
   class V5
+    class Item
+      attr_reader :attrs
+      def initialize(attrs, text)
+        @attrs = attrs
+        @text = text
+        @children = {}
+      end
+      def add(rank, item)
+        @children[rank.to_i] = item
+      end
+
+      def print_all
+        @children.keys.sort.each {|k| k.print_all}
+        puts @text
+      end
+    end
+
     class Document < Nokogiri::XML::SAX::Document
       def initialize
         @in_column = false
@@ -98,6 +117,7 @@ module OmniOutliner
         @in_item = false
         @in_style = false
         @str = ""
+        @items = {}
         super
       end
 
@@ -105,31 +125,48 @@ module OmniOutliner
         @str += s if @in_lit && (!@in_style && !@in_column)
       end
 
-      def start_element(name, attrs)
+      def start_element(name, attrs_a)
+        if attrs_a.size != 0
+          @attrs = {}
+          attrs_a.each {|k,v| @attrs[k] = v}
+          @id = @attrs["id"] if @attrs.has_key?("id")
+          @is_root = @attrs["is-root"] if @attrs.has_key?("is-root")
+        end
         @in_column = true if name == "column"
-        @in_item = true if name == "item"
         @in_style = true if name == "style"
         @in_lit = true if name == "lit"
+        @in_item = true if name == "item"
         if name == "cell"
           # if it is a hyperlink, use name part as part of output
-          if n = attrs.find{|a| a[0] == "name"}
-            @str += n[1]
+          if @attrs.has_key?("name")
+            @str += @attrs["name"]
           end
         end
       end
 
       def end_element(name)
         @in_column = false if name == "column"
-        @in_item = false if name == "item"
         @in_style = false if name == "style"
+        if name == "item"
+          @in_item = false
+          @str.gsub(/\n/, '')
+          @items[@id] = Item.new(@attrs, @str)
+          @str = ""
+        end
         if name == "lit"
           @str += "\n"
           @in_lit = false
         end
-        if name == "values"
-          @str.gsub(/\n/, '')
-          puts @str
-          @str = ""
+        if name == "outline" # final output
+          @root = nil
+          @items.each do |id, item|
+            if pid = item.attrs["parent-id"]
+              @items[pid].add(item.attrs["rank"], item)
+            end
+            @root = item if item.attrs["is-root"] == "yes"
+          end
+          ap @root
+          @root.print_all unless @root.nil?
         end
       end
     end
