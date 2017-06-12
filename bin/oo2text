@@ -95,11 +95,13 @@ module OmniOutliner
   class V5
     class Item
       attr_reader :attrs
+
       def initialize(attrs, text)
         @attrs = attrs
         @text = text
         @children = {}
       end
+
       def add(rank, item)
         @children[rank.to_i] = item
       end
