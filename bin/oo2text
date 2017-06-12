@@ -21,8 +21,6 @@ require 'nokogiri'
 require 'zlib'
 require 'zip'
 require 'stringio'
-require 'awesome_print'
-require 'pry-byebug'
 
 module OmniOutliner
 
