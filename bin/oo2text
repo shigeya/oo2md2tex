@@ -31,6 +31,7 @@ module OmniOutliner
         @in_lit = false
         @in_item = false
         @in_style = false
+        @in_root = false
         @str = ""
         super
       end
@@ -44,6 +45,10 @@ module OmniOutliner
         @in_item = true if name == "item"
         @in_style = true if name == "style"
         @in_lit = true if name == "lit"
+        if name == "root"
+          @in_root = true
+          @str = ""
+        end
         if name == "cell"
           # if it is a hyperlink, use name part as part of output
           if n = attrs.find{|a| a[0] == "name"}
@@ -62,7 +67,7 @@ module OmniOutliner
         end
         if name == "values"
           @str.gsub(/\n/, '')
-          puts @str
+          puts @str if @in_root
           @str = ""
         end
       end
