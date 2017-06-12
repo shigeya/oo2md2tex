@@ -103,11 +103,12 @@ module OmniOutliner
       end
 
       def add(rank, item)
+        rank = "0" if rank == ""
         @children[rank.to_i] = item
       end
 
       def print_all
-        @children.keys.sort.each {|k| k.print_all}
+        @children.keys.sort.each {|k| @children[k].print_all}
         puts @text
       end
     end
@@ -162,13 +163,16 @@ module OmniOutliner
         if name == "outline" # final output
           @root = nil
           @items.each do |id, item|
-            if pid = item.attrs["parent-id"]
+            if item.attrs["is-root"] == "yes"
+              @root = item
+            elsif pid = item.attrs["parent-id"]
               @items[pid].add(item.attrs["rank"], item)
+            else
+              @root.add(item.attrs["rank"], item)
             end
-            @root = item if item.attrs["is-root"] == "yes"
           end
           ap @root
-          @root.print_all unless @root.nil?
+          @root.print_all #unless @root.nil?
         end
       end
     end
