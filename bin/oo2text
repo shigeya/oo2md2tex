@@ -21,6 +21,8 @@ require 'nokogiri'
 require 'zlib'
 require 'zip'
 require 'stringio'
+require 'awesome_print'
+require 'pry-byebug'
 
 module OmniOutliner
 
@@ -107,8 +109,8 @@ module OmniOutliner
       end
 
       def add(rank, item)
-        rank = "0" if rank == ""
-        @children[rank.to_i] = item
+        rank = "0" if rank.nil? || rank == ""
+        @children[rank.hex] = item
       end
 
       def print_all
@@ -126,6 +128,7 @@ module OmniOutliner
         @str = ""
         @items = {}
         @id_stack = []
+        @attrs_stack = []
         @in_items = false
         super
       end
@@ -152,11 +155,17 @@ module OmniOutliner
             @str += @attrs["name"]
           end
         end
-        @id_stack.push(@id)
+        if name == "item"
+           @id_stack.push(@id)
+           @attrs_stack.push(@attrs)
+        end
       end
 
       def end_element(name)
-        @id = @id_stack.pop
+        if name == "item"
+          @id = @id_stack.pop
+          @attrs = @attrs_stack.pop
+        end
         @in_column = false if name == "column"
         @in_style = false if name == "style"
         if name == "item"
@@ -171,6 +180,7 @@ module OmniOutliner
         end
         if name == "outline" # final output
           @root = nil
+          puts "#{@items.count} items"
           @items.each do |id, item|
             if item.attrs["is-root"] == "yes"
               @root = item
