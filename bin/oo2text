@@ -108,8 +108,10 @@ module OmniOutliner
       end
 
       def print_all
+#        puts "[#{attrs['id']}]"
+        ap self
+        puts "<#{@text}>"
         @children.keys.sort.each {|k| @children[k].print_all}
-        puts @text
       end
     end
 
@@ -121,6 +123,7 @@ module OmniOutliner
         @in_style = false
         @str = ""
         @items = {}
+        @id_stack = []
         super
       end
 
@@ -145,9 +148,11 @@ module OmniOutliner
             @str += @attrs["name"]
           end
         end
+        @id_stack.push(@id)
       end
 
       def end_element(name)
+        @id = @id_stack.pop
         @in_column = false if name == "column"
         @in_style = false if name == "style"
         if name == "item"
@@ -171,7 +176,6 @@ module OmniOutliner
               @root.add(item.attrs["rank"], item)
             end
           end
-          ap @root
           @root.print_all #unless @root.nil?
         end
       end
