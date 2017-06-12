@@ -98,6 +98,7 @@ module OmniOutliner
   class V5
     class Item
       attr_reader :attrs
+      attr_accessor :is_root
 
       def initialize(attrs, text)
         @attrs = attrs
@@ -111,7 +112,7 @@ module OmniOutliner
       end
 
       def print_all
-        puts @text
+        puts @text unless @is_root
         @children.keys.sort.each {|k| @children[k].print_all}
       end
     end
@@ -125,6 +126,7 @@ module OmniOutliner
         @str = ""
         @items = {}
         @id_stack = []
+        @in_items = false
         super
       end
 
@@ -143,6 +145,7 @@ module OmniOutliner
         @in_style = true if name == "style"
         @in_lit = true if name == "lit"
         @in_item = true if name == "item"
+        @in_items = true if name == "items"
         if name == "cell"
           # if it is a hyperlink, use name part as part of output
           if @attrs.has_key?("name")
@@ -163,7 +166,7 @@ module OmniOutliner
           @str = ""
         end
         if name == "lit"
-          @str += "\n"
+          @str += "\n" if @in_items
           @in_lit = false
         end
         if name == "outline" # final output
@@ -171,6 +174,7 @@ module OmniOutliner
           @items.each do |id, item|
             if item.attrs["is-root"] == "yes"
               @root = item
+              @root.is_root = true
             elsif pid = item.attrs["parent-id"]
               @items[pid].add(item.attrs["rank"], item)
             else
