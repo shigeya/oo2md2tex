@@ -108,9 +108,6 @@ module OmniOutliner
       end
 
       def print_all
-#        puts "[#{attrs['id']}]"
-        ap self
-        puts "<#{@text}>"
         @children.keys.sort.each {|k| @children[k].print_all}
       end
     end
