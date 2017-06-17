@@ -25,9 +25,13 @@ Using following two scripts convert Markdown formatted (outlined) OmniOutliner f
 - `md2tex` convert slightly extended Markdown text file into TeX.
   The extension described in `Format.md`
 
-- `oo2text` extract [OmniOutliner][oo] v3 file as text file
+- `oo2text` extract [OmniOutliner][oo] v3(`.oo3`) or v5(`.ooutline`) file as text file. (Note: v3 format described as [DTD][oo3dtd], v5 format described as RelaxNG in [outline][oo5rng-o] and [editor][oo5rng-e] separately)
 
 [oo]: http://www.omnigroup.com/omnioutliner
+
+[oo3dtd]: https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd
+[oo5rng-o]: https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v5.rng
+[oo5rng-e]: https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-editors-v1.rng
 
 - `ja-ten-maru-normalize` is a utility script to normalize Japanse multibyte comma and periods.
 
@@ -36,9 +40,11 @@ Using following two scripts convert Markdown formatted (outlined) OmniOutliner f
 
 Ruby 1.9 and gems:
 
-- [Redcarpet](https://github.com/vmg/redcarpet/)
+- [`Redcarpet`](https://github.com/vmg/redcarpet/)
 
-- nokogiri and zlib for OmniOutliner file handling
+- `nokogiri` and `zlib` for OmniOutliner file handling
+
+- `rubyzip` for v5 format support
 
 # Typical usage
 
@@ -49,25 +55,25 @@ From `Makefile` in `sample` directory:
 
     # Sample Makefile
     .SUFFIXES: .md .tex
-    
+
     .md.tex:; ../bin/md2tex $< > $@
-    
+
     sample.pdf: sample.tex
             latex sample
             dvipdfmx sample
-    
+
     sample-md.tex: sample-md.md
-    
+
     sample.tex: sample-md.tex preamble.tex trailer.tex
             (cat preamble.tex sample-md.tex trailer.tex) > sample.tex
 
     sample-md.md: sample.oo3/contents.xml
             ../bin/oo2text sample.oo3 > sample-md.md
-    
+
     clean::
             rm -f sample.log sample.aux sample.pdf sample-md.md sample-md.tex sample.dvi
 
-You can automate whole PDF generation process on save of OmniOutliner, 
+You can automate whole PDF generation process on save of OmniOutliner,
 by using [watchr][watchr] script like the one in `tools` directory.
 
 # Macro substitutions
@@ -77,7 +83,7 @@ To embed some of build time information onto the file, following macros are defi
 - `_OO2_RUN_STAMP__`
 
   Simple timestamp by `date`
-  
+
 - `__OO2_GIT_DESCRIBE__`
 
   Output of `git describe`. If no meaningful tags are defined, git will emit error.
@@ -96,7 +102,7 @@ To embed some of build time information onto the file, following macros are defi
 
 # License
 
-    Copyright (c)2012 Shigeya Suzuki
+    Copyright (c)2012,2017 Shigeya Suzuki
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
