@@ -26,96 +26,113 @@ require 'pry-byebug'
 
 module OmniOutliner
 
-  class V3
-    class ParseContext
-      attr_accessor :parent, :name, :column, :lit, :item, :style, :root, :str
+  # Common Classes
+  class ParseContext
+    attr_accessor :parent, :name, :attrs, :column, :lit, :item, :style, :root, :str, :id, :is_root
 
-      def initialize(parent, name)
-        @parent = parent
-        @name = name
-        @column = @lit = @item = @style = @root = false
-        @str = ""
-      end
+    def initialize(parent, name, attrs_a)
+      @parent = parent
+      @name = name
+      @column = @lit = @item = @style = @root = @is_root = false
+      @id = nil
+      @str = ""
 
-      def start_element(name, attrs)
-        @column = name == "column"
-        @item = name == "item"
-        @style = name == "style"
-        @lit = name == "lit"
-        @root = name == "root"
-        if name == "cell"
-          # if it is a hyperlink, use name part as part of output
-          if n = attrs.find{|a| a[0] == "name"}
-            @str += n[1]
-          end
-        end
-      end
-
-      def end_element(name)
-        if name == "lit"
-          @str += "\n" if in_body_text
-        end
-        if name == "values"
-          @str.gsub(/\n/, '')
-        end
-        if name == "outline"
-          puts @str
-          @str = ""
-        end
-      end
-
-      def in_body_text
-        if @item
-          true
-        elsif @style || @column
-          false
-        else
-          if @in_body_text == nil
-            @in_body_text = @parent.nil? ? false : @parent.in_body_text
-          end
-          @in_body_text
-        end
-      end
-
-      def characters(s)
-        @str += s if @lit && in_body_text
-      end
-
-      def elevate(context)
-        @str += context.str
+      @attrs = {}
+      if attrs_a.size != 0
+        attrs_a.each {|k,v| @attrs[k] = v}
+        @id = @attrs["id"] if @attrs.has_key?("id")
+        @is_root = @attrs["is-root"] if @attrs.has_key?("is-root")
       end
     end
 
-    class Document < Nokogiri::XML::SAX::Document
-      def initialize
-        @contexts = []
-        @context = nil
-        super
+    def start_element(name, attrs)
+      @column = name == "column"
+      @item = name == "item"
+      @style = name == "style"
+      @lit = name == "lit"
+      @root = name == "root"
+      if name == "cell"
+        # if it is a hyperlink, use name part as part of output
+        @str += @attrs["name"] if @attrs.has_key?("name")
       end
+    end
 
-      def push_context(name)
-        @contexts.push(@context)
-        @context = ParseContext.new(@context, name)
+    def end_element(name)
+      if name == "lit"
+        @str += "\n" if in_body_text
       end
-
-      def pop_context
-        old_context = @context
-        @context = @contexts.pop
-        @context.elevate(old_context) if @context
+      if name == "values"
+        @str.gsub(/\n/, '')
       end
+    end
 
-      def start_element(name, attrs)
-        push_context(name)
-        @context.start_element(name, attrs)
+    def in_body_text
+      if @item
+        true
+      elsif @style || @column
+        false
+      else
+        if @in_body_text == nil
+          @in_body_text = @parent.nil? ? false : @parent.in_body_text
+        end
+        @in_body_text
       end
+    end
 
-      def end_element(name)
-        @context.end_element(name)
-        pop_context
-      end
+    def characters(s)
+      @str += s if @lit && in_body_text
+    end
 
-      def characters(s)
-        @context.characters(s)
+    def elevate(context)
+      @str += context.str
+    end
+  end
+
+  class DocumentCommon < Nokogiri::XML::SAX::Document
+    def initialize
+      @contexts = []
+      @context = nil
+      super
+    end
+
+    def push_context(name, attrs)
+      @contexts.push(@context)
+      @context = ParseContext.new(@context, name, attrs)
+    end
+
+    def pop_context
+      old_context = @context
+      @context = @contexts.pop
+      @context.elevate(old_context) if @context
+    end
+
+    def start_element(name, attrs)
+      push_context(name, attrs)
+      @context.start_element(name, attrs)
+    end
+
+    def end_element(name)
+      final_output if name == "outline"
+      @context.end_element(name)
+      pop_context
+    end
+
+    def characters(s)
+      @context.characters(s)
+    end
+
+    def final_output
+    end
+  end
+
+  # Version Dependent Classes for V3
+  #
+  # Format Documenatation can be found at:
+  # https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd
+  class V3
+    class Document < DocumentCommon
+      def final_output
+        puts @context.str
       end
     end
 
@@ -139,8 +156,13 @@ module OmniOutliner
         super(@file)
       end
     end
-  end # v3
+  end
 
+  # Version Dependent Classes for V5
+  #
+  # Format Documenatation can be found at:
+  # https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v5.rng
+  # https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-editors-v1.rng
   class V5
     class Item
       attr_reader :attrs
@@ -163,80 +185,34 @@ module OmniOutliner
       end
     end
 
-    class Document < Nokogiri::XML::SAX::Document
+    class Document < DocumentCommon
       def initialize
-        @in_column = false
-        @in_lit = false
-        @in_item = false
-        @in_style = false
-        @str = ""
         @items = {}
-        @id_stack = []
-        @attrs_stack = []
-        @in_items = false
         super
-      end
-
-      def characters(s)
-        @str += s if @in_lit && (!@in_style && !@in_column)
-      end
-
-      def start_element(name, attrs_a)
-        if attrs_a.size != 0
-          @attrs = {}
-          attrs_a.each {|k,v| @attrs[k] = v}
-          @id = @attrs["id"] if @attrs.has_key?("id")
-          @is_root = @attrs["is-root"] if @attrs.has_key?("is-root")
-        end
-        @in_column = true if name == "column"
-        @in_style = true if name == "style"
-        @in_lit = true if name == "lit"
-        @in_item = true if name == "item"
-        @in_items = true if name == "items"
-        if name == "cell"
-          # if it is a hyperlink, use name part as part of output
-          if @attrs.has_key?("name")
-            @str += @attrs["name"]
-          end
-        end
-        if name == "item"
-           @id_stack.push(@id)
-           @attrs_stack.push(@attrs)
-        end
       end
 
       def end_element(name)
         if name == "item"
-          @id = @id_stack.pop
-          @attrs = @attrs_stack.pop
+          str = @context.str
+          str.gsub(/\n/, '')
+          @items[@context.id] = Item.new(@context.attrs, str)
+          @context.str = ""
         end
-        @in_column = false if name == "column"
-        @in_style = false if name == "style"
-        if name == "item"
-          @in_item = false
-          @str.gsub(/\n/, '')
-          @items[@id] = Item.new(@attrs, @str)
-          @str = ""
-        end
-        if name == "lit"
-          @str += "\n" if @in_items
-          @in_lit = false
-        end
-        if name == "outline" # final output
-          @root = nil
-          puts "#{@items.count} items"
-          @items.each do |id, item|
-            if item.attrs["is-root"] == "yes"
-              @root = item
-              @root.is_root = true
-            elsif pid = item.attrs["parent-id"]
-              @items[pid].add(item.attrs["rank"], item)
-            else
-              @root.add(item.attrs["rank"], item)
-            end
+        super
+      end
+
+      def final_output
+        @items.each do |id, item|
+          if item.attrs["is-root"] == "yes"
+            @root = item
+            @root.is_root = true
+          elsif pid = item.attrs["parent-id"]
+            @items[pid].add(item.attrs["rank"], item)
+          else
+            @root.add(item.attrs["rank"], item)
           end
-          @root.print_all #unless @root.nil?
         end
+        @root.print_all #unless @root.nil?
       end
     end
 
