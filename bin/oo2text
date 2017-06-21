@@ -22,6 +22,10 @@ require 'zlib'
 require 'zip'
 require 'stringio'
 
+$DBG = true
+require 'awesome_print' if $DBG
+require 'pry-byebug' if $DBG
+
 module OmniOutliner
 
   # Common Classes
@@ -56,9 +60,6 @@ module OmniOutliner
     end
 
     def end_element(name)
-      if name == "lit"
-        @str += "\n" if in_body_text
-      end
       if name == "values"
         @str.gsub(/\n/, '')
       end
@@ -88,8 +89,8 @@ module OmniOutliner
 
   class DocumentCommon < Nokogiri::XML::SAX::Document
     def initialize
-      @contexts = []
-      @context = nil
+      @context = ParseContext.new(nil, "ROOT", {})
+      @contexts = [@context]
       super
     end
 
@@ -104,22 +105,8 @@ module OmniOutliner
       @context.elevate(old_context) if @context
     end
 
-    def start_element(name, attrs)
-      push_context(name, attrs)
-      @context.start_element(name, attrs)
-    end
-
-    def end_element(name)
-      final_output if name == "outline"
-      @context.end_element(name)
-      pop_context
-    end
-
     def characters(s)
       @context.characters(s)
-    end
-
-    def final_output
     end
   end
 
@@ -129,6 +116,21 @@ module OmniOutliner
   # https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd
   class V3
     class Document < DocumentCommon
+      def start_element(name, attrs)
+        push_context(name, attrs)
+        @context.start_element(name, attrs)
+      end
+
+      def end_element(name)
+        if name == "values"
+          @context.str.gsub!(/\n/, '')
+          @context.str += "\n"
+        end
+        @context.end_element(name)
+        pop_context
+        final_output if name == "outline"
+      end
+
       def final_output
         puts @context.str
       end
@@ -163,22 +165,36 @@ module OmniOutliner
   # https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-editors-v1.rng
   class V5
     class Item
-      attr_reader :attrs
-      attr_accessor :is_root
+      attr_reader :attrs, :rank, :id, :parent_id
+      attr_accessor :is_root, :parent
 
       def initialize(attrs, text)
         @attrs = attrs
+        @id = @attrs["id"]
+        @parent = nil
+        @parent_id = @attrs["parent-id"]
+        @rank = @attrs["rank"]
+        @rank = "0" if @rank.nil? || @rank == ""
+        @rank += "00" if @rank.size == 4
         @text = text
         @children = {}
       end
 
-      def add(rank, item)
-        rank = "0" if rank.nil? || rank == ""
-        rank += "00" if rank.size == 4
-        @children[rank.hex] = item
+      def add_child(item)
+        @children[item.rank.hex] = item
+        item.parent = self
+      end
+
+      def parent_chain
+        if @parent == nil
+          return ["ROOT"]
+        else
+          @parent.parent_chain + [self.id]
+        end
       end
 
       def print_all
+        puts "%% " + parent_chain.join(" < ") + " (#{@rank}) #{@attrs}\n" if $DBG
         puts @text unless @is_root
         @children.keys.sort.each {|k| @children[k].print_all}
       end
@@ -190,14 +206,18 @@ module OmniOutliner
         super
       end
 
+      def start_element(name, attrs)
+        push_context(name, attrs)
+        @context.start_element(name, attrs)
+      end
+
       def end_element(name)
+        @context.end_element(name)
         if name == "item"
-          str = @context.str
-          str.gsub(/\n/, '')
-          @items[@context.id] = Item.new(@context.attrs, str)
-          @context.str = ""
+          @items[@context.id] = Item.new(@context.attrs, @context.str + "\n")
         end
-        super
+        pop_context
+        final_output if name == "outline"
       end
 
       def final_output
@@ -206,9 +226,9 @@ module OmniOutliner
             @root = item
             @root.is_root = true
           elsif pid = item.attrs["parent-id"]
-            @items[pid].add(item.attrs["rank"], item)
+            @items[pid].add_child(item)
           else
-            @root.add(item.attrs["rank"], item)
+            @root.add_child(item)
           end
         end
         @root.print_all #unless @root.nil?
@@ -238,7 +258,7 @@ module OmniOutliner
         super(@file) if @file
       end
     end
-  end # v3
+  end # v5
 end
 
 ARGV.options do |o|

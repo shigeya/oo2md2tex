@@ -1,6 +1,10 @@
 # oo2text and text2tex - A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner
 
-(including OmniOutliner v3 file to text script)
+(including OmniOutliner v3/v5 file to text script)
+
+WARNING: Current version has minor bug with v5 format. Some of the text does not output correctly.
+(Trying to figure out how to handle XML node with attribute `rank=""`)
+Stay with v3 format if possible.
 
 # Purpose/Motivation
 
