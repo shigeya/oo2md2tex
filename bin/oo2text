@@ -22,9 +22,9 @@ require 'zlib'
 require 'zip'
 require 'stringio'
 
-$DBG = true
-require 'awesome_print' if $DBG
-require 'pry-byebug' if $DBG
+$OO2DBG = false
+require 'awesome_print' if $OO2DBG
+require 'pry-byebug' if $OO2DBG
 
 module OmniOutliner
 
