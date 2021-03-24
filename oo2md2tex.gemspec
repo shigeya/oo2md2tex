@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'oo2md2tex'
-  s.version     = '0.1.2'
-  s.date        = '2021-03-09'
+  s.version     = '0.1.3'
+  s.date        = '2021-03-25'
   s.summary     = "oo2text and md2tex"
   s.description = "A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner"
   s.authors     = ["Shigeya Suzuki"]
@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w[Format.md]
   s.license = 'ISC'
   s.required_ruby_version = '>= 1.9'
-  s.add_runtime_dependency 'redcarpet', '~> 3.5.1'
+  s.add_runtime_dependency 'redcarpet', '~> 3.5', '>= 3.5.1'
   s.add_runtime_dependency 'nokogiri', '~> 1.5'
   s.add_runtime_dependency 'rubyzip', '~> 1.3'
 
