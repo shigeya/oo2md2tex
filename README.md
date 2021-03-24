@@ -106,7 +106,7 @@ To embed some of build time information onto the file, following macros are defi
 
 # License
 
-    Copyright (c)2012,2017 Shigeya Suzuki
+    Copyright (c)2012,2017,2021 Shigeya Suzuki
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
