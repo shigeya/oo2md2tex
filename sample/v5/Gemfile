@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'oo2md2tex'
+gem 'oo2md2tex', '~> 0.1'
 
 gem 'redcarpet'
 gem 'nokogiri'
-gem 'rubyzip', '>= 1.0.0'
+gem 'rubyzip'
