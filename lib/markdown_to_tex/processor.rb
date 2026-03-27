@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 #    Copyright (c)2012 Shigeya Suzuki
 #
@@ -35,7 +36,7 @@ module MarkdownToTeX
 							@git_branch_name = $2
 							@git_wd_hash_long = $3
 							@git_wd_hash = @git_wd_hash_long[0,6]
-							@git_commit_line = $4
+							@git_commit_line = $4.dup
 							@git_commit_line.gsub!(/\#/, '\#')
 							@git_commit_line.gsub!(/\%/, '\%')
 							@git_commit_line.gsub!(/\[ahead.*\] /, '')

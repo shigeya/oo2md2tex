@@ -19,9 +19,9 @@ Gem::Specification.new do |s|
   s.executables = ["oo2text","md2tex","ja-ten-maru-normalize","ja-count"]
   s.extra_rdoc_files = %w[Format.md]
   s.license = 'ISC'
-  s.required_ruby_version = '>= 1.9'
-  s.add_runtime_dependency 'redcarpet', '~> 3.5', '>= 3.5.1'
-  s.add_runtime_dependency 'nokogiri', '~> 1.13.2'
-  s.add_runtime_dependency 'rubyzip', '~> 1.3'
+  s.required_ruby_version = '>= 3.1'
+  s.add_runtime_dependency 'redcarpet', '>= 3.5.1'
+  s.add_runtime_dependency 'nokogiri', '>= 1.13'
+  s.add_runtime_dependency 'rubyzip', '>= 2.0'
 
 end

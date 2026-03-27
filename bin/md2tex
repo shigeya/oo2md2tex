@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
 #    Copyright (c)2012 Shigeya Suzuki
 #
@@ -15,10 +15,6 @@
 #    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 #    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-
-if RUBY_VERSION >= "1.9"  # encoding only supported in Ruby 1.9.x
-  Encoding.default_external = "UTF-8"
-end
 
 $script_base_dir = File.dirname(__FILE__)+"/../lib"
 $:.unshift($script_base_dir)
@@ -50,10 +46,10 @@ all = processor.process(ARGF.read)
 puts processor.job_signature
 puts all
 
-all.gsub!(/%.*/, '')
-all.gsub!(/\s+/, ' ')
-all.gsub!(/\\(begin|end){[^}]+}/, '')
-all.gsub!(/\\([A-Za-z]+)/, '')
-all.gsub!(/\s+/, '')
-all.gsub!(/\{|\}/, '')
+all = all.gsub(/%.*/, '')
+all = all.gsub(/\s+/, ' ')
+all = all.gsub(/\\(begin|end){[^}]+}/, '')
+all = all.gsub(/\\([A-Za-z]+)/, '')
+all = all.gsub(/\s+/, '')
+all = all.gsub(/\{|\}/, '')
 puts "% Text length: #{all.size} chars"

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 #    Copyright (c)2012 Shigeya Suzuki
 #
@@ -24,7 +25,7 @@ module MarkdownToTeX
 
     # Process a paragraph
     def self.process_paragraph(text)
-      text.gsub!(/\(\((.*)\)\)/, '\\ITEM{\1}') # description format
+      text = text.gsub(/\(\((.*)\)\)/, '\\ITEM{\1}') # description format
       self.reference(text)
     end
 
@@ -79,8 +80,9 @@ module MarkdownToTeX
 
     def self.label_split(s)
       label = ""
-      if s.sub!(/\s*\[([^\]]+)\]/, '')
+      if s =~ /\s*\[([^\]]+)\]/
         label = $1
+        s = s.sub(/\s*\[([^\]]+)\]/, '')
       end
       [s, label]
     end
@@ -117,7 +119,7 @@ module MarkdownToTeX
 
     def self.process_final(text, macros)
       # Macro expansions
-      macros.each {|m, v| text.gsub!(m, v) }
+      macros.each {|m, v| text = text.gsub(m, v) }
       text
     end
 

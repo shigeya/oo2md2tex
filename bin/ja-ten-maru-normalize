@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
 #    Copyright (c)2012 Shigeya Suzuki
 #
@@ -17,10 +17,6 @@
 #
 
 require 'optparse'
-
-if RUBY_VERSION >= "1.9"  # encoding only supported in Ruby 1.9.x
-  Encoding.default_external = "UTF-8"
-end
 
 #####
 
@@ -54,8 +50,8 @@ end
 #####
 
 def text_tweak(str, opts)
-  str.tr!('、。', '，．') if opts[:ja_comma_subst_cp]
-  str.tr!('，. ', '、。') if opts[:ja_comma_subst_tm]
+  str = str.tr('、。', '，．') if opts[:ja_comma_subst_cp]
+  str = str.tr('，. ', '、。') if opts[:ja_comma_subst_tm]
 	str
 end
 

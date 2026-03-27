@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- mode: ruby -*-
+# frozen_string_literal: true
 #
 #    Copyright (c)2012,2017 Shigeya Suzuki
 #
@@ -37,7 +37,7 @@ module OmniOutliner
       @name = name
       @column = @lit = @item = @style = @root = @is_root = false
       @id = nil
-      @str = ""
+      @str = +""
 
       @attrs = {}
       if attrs_a.size != 0
@@ -123,8 +123,7 @@ module OmniOutliner
 
       def end_element(name)
         if name == "values"
-          @context.str.gsub!(/\n/, '')
-          @context.str += "\n"
+          @context.str = @context.str.gsub(/\n/, '') + "\n"
         end
         @context.end_element(name)
         pop_context
