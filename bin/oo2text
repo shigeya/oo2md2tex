@@ -88,8 +88,7 @@ module OmniOutliner
   end
 
   # Adapter: translate REXML SAX2 callbacks (uri, localname, qname, attrs-hash)
-  # into the parser's (name, attr-pairs) interface, matching the original
-  # Nokogiri SAX signatures.
+  # into the parser's (name, attr-pairs) interface used by the Document classes.
   class Sax2Adapter
     def initialize(doc)
       @doc = doc
