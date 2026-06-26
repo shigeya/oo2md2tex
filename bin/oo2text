@@ -17,7 +17,7 @@
 #
 
 require 'optparse'
-require 'nokogiri'
+require 'rexml/parsers/sax2parser'
 require 'zlib'
 require 'zip'
 require 'stringio'
@@ -87,11 +87,35 @@ module OmniOutliner
     end
   end
 
-  class DocumentCommon < Nokogiri::XML::SAX::Document
+  # Adapter: translate REXML SAX2 callbacks (uri, localname, qname, attrs-hash)
+  # into the parser's (name, attr-pairs) interface, matching the original
+  # Nokogiri SAX signatures.
+  class Sax2Adapter
+    def initialize(doc)
+      @doc = doc
+    end
+
+    def start_element(_uri, _localname, qname, attributes)
+      @doc.start_element(qname, attributes.to_a)
+    end
+
+    def end_element(_uri, _localname, qname)
+      @doc.end_element(qname)
+    end
+
+    def characters(text)
+      @doc.characters(text)
+    end
+
+    def cdata(text)
+      @doc.characters(text)
+    end
+  end
+
+  class DocumentCommon
     def initialize
       @context = ParseContext.new(nil, "ROOT", {})
       @contexts = [@context]
-      super
     end
 
     def push_context(name, attrs)
@@ -107,6 +131,17 @@ module OmniOutliner
 
     def characters(s)
       @context.characters(s)
+    end
+
+    # Drive a REXML SAX2 parse from an IO/String source through this document.
+    def parse_source(source)
+      parser = REXML::Parsers::SAX2Parser.new(source)
+      adapter = Sax2Adapter.new(self)
+      parser.listen(:start_element) {|*a| adapter.start_element(*a) }
+      parser.listen(:end_element)   {|*a| adapter.end_element(*a) }
+      parser.listen(:characters)    {|text| adapter.characters(text) }
+      parser.listen(:cdata)         {|text| adapter.cdata(text) }
+      parser.parse
     end
   end
 
@@ -135,7 +170,7 @@ module OmniOutliner
       end
     end
 
-    class Parser < Nokogiri::XML::SAX::Parser
+    class Parser
       def initialize(fn)
         @file = nil
         if fn =~ /\.oo3$/
@@ -148,11 +183,11 @@ module OmniOutliner
         else
           @file = File.open(fn)
         end
-        super(Document.new)
+        @doc = Document.new
       end
 
       def parse
-        super(@file)
+        @doc.parse_source(@file)
       end
     end
   end
@@ -238,7 +273,7 @@ module OmniOutliner
       end
     end
 
-    class Parser < Nokogiri::XML::SAX::Parser
+    class Parser
       def initialize(fn)
         @file = nil
         if fn =~ /\.ooutline$/
@@ -254,11 +289,11 @@ module OmniOutliner
             @file = ""
           end
         end
-        super(Document.new)
+        @doc = Document.new
       end
 
       def parse
-        super(@file) if @file
+        @doc.parse_source(@file) if @file
       end
     end
   end # v5

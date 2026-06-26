@@ -33,7 +33,7 @@ PDF generation requires `latex` and `dvipdfmx` to be installed.
 
 Three-stage pipeline with two main executables in `bin/`:
 
-- **oo2text**: Parses OmniOutliner XML (SAX-based via Nokogiri) and outputs extended Markdown. Handles v3 (gzip XML) and v5/v6 (ZIP package) formats separately. v6-saved `.ooutline` files still use the v5 namespace internally, so the same `V5::Parser` handles both.
+- **oo2text**: Parses OmniOutliner XML (SAX-based via REXML, pure Ruby) and outputs extended Markdown. Handles v3 (gzip XML) and v5/v6 (ZIP package) formats separately. v6-saved `.ooutline` files still use the v5 namespace internally, so the same `V5::Parser` handles both.
 - **md2tex**: Reads extended Markdown from stdin/files and outputs TeX. Uses Redcarpet with a custom renderer (`lib/markdown_to_tex/renderer.rb`). Optional `--git` flag embeds git metadata in output.
 
 Library code in `lib/markdown_to_tex/`:

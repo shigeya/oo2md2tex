@@ -42,9 +42,9 @@ Ruby 1.9 and gems:
 
 - [`Redcarpet`](https://github.com/vmg/redcarpet/)
 
-- `nokogiri` and `zlib` for OmniOutliner file handling
+- `rexml` (pure-Ruby XML parser) and `zlib` for OmniOutliner file handling
 
-- `rubyzip` for v5 format support
+- `rubyzip` for v5/v6 format support
 
 # Typical usage
 
