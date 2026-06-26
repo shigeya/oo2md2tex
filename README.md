@@ -1,10 +1,6 @@
 # oo2text and text2tex - A barebone Markdown to TeX/LaTeX converter kit via OmniOutliner
 
-(including OmniOutliner v3/v5 file to text script)
-
-WARNING: Current version has minor bug with v5 format. Some of the text does not output correctly.
-(Trying to figure out how to handle XML node with attribute `rank=""`)
-Stay with v3 format if possible.
+(including OmniOutliner v3/v5/v6 file to text script)
 
 # Purpose/Motivation
 
@@ -29,7 +25,7 @@ Using following two scripts convert Markdown formatted (outlined) OmniOutliner f
 - `md2tex` convert slightly extended Markdown text file into TeX.
   The extension described in `Format.md`
 
-- `oo2text` extract [OmniOutliner][oo] v3(`.oo3`) or v5(`.ooutline`) file as text file. (Note: v3 format described as [DTD][oo3dtd], v5 format described as RelaxNG in [outline][oo5rng-o] and [editor][oo5rng-e] separately)
+- `oo2text` extract [OmniOutliner][oo] v3(`.oo3`) or v5/v6(`.ooutline`) file as text file. (Note: v3 format described as [DTD][oo3dtd], v5 format described as RelaxNG in [outline][oo5rng-o] and [editor][oo5rng-e] separately. v6-saved `.ooutline` files still use the v5 namespace internally and are handled by the same parser.)
 
 [oo]: http://www.omnigroup.com/omnioutliner
 

@@ -164,23 +164,25 @@ module OmniOutliner
   # https://www.omnigroup.com/namespace/OmniOutliner/xmloutline-editors-v1.rng
   class V5
     class Item
-      attr_reader :attrs, :rank, :id, :parent_id
+      attr_reader :attrs, :rank, :rank_hex, :seq, :id, :parent_id
       attr_accessor :is_root, :parent
 
-      def initialize(attrs, text)
+      def initialize(attrs, text, seq)
         @attrs = attrs
         @id = @attrs["id"]
         @parent = nil
         @parent_id = @attrs["parent-id"]
-        @rank = @attrs["rank"]
-        @rank = "0" if @rank.nil? || @rank == ""
-        @rank += "00" if @rank.size == 4
+        @seq = seq                         # document appearance order (tie-break)
+        @rank = @attrs["rank"].to_s
+        rank = @rank.empty? ? "0" : @rank  # empty rank means first (0)
+        rank += "00" if rank.size == 4     # legacy 4-digit -> 6-digit
+        @rank_hex = rank.hex
         @text = text
-        @children = {}
+        @children = []                     # Hash -> Array
       end
 
       def add_child(item)
-        @children[item.rank.hex] = item
+        @children << item
         item.parent = self
       end
 
@@ -195,13 +197,14 @@ module OmniOutliner
       def print_all
         puts "%% " + parent_chain.join(" < ") + " (#{@rank}) #{@attrs}\n" if $DBG
         puts @text unless @is_root
-        @children.keys.sort.each {|k| @children[k].print_all}
+        @children.sort_by {|c| [c.rank_hex, c.seq]}.each {|c| c.print_all}
       end
     end
 
     class Document < DocumentCommon
       def initialize
         @items = {}
+        @seq = 0
         super
       end
 
@@ -213,7 +216,8 @@ module OmniOutliner
       def end_element(name)
         @context.end_element(name)
         if name == "item"
-          @items[@context.id] = Item.new(@context.attrs, @context.str + "\n")
+          @items[@context.id] = Item.new(@context.attrs, @context.str + "\n", @seq)
+          @seq += 1
         end
         pop_context
         final_output if name == "outline"
