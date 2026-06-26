@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'oo2md2tex', '~> 0.1'
-
-gem 'redcarpet'
-gem "rexml", ">= 3.2"
+# Use the gem from this repo (pulls in its runtime deps: redcarpet, rexml,
+# rubyzip) instead of the published release, so samples track local changes.
+gemspec path: '../..'
