@@ -55,3 +55,9 @@ The project uses a custom Markdown dialect documented in `Format.md`. Key featur
 - `bin/ja-ten-maru-normalize` — Japanese punctuation normalization
 - `bin/ja-count` — Japanese character counting
 - `tools/oo2.watchr` — File watcher for continuous build (requires `watchr` gem)
+
+## Known Issues / Limitations
+
+- The `rank=""` ordering bug (v5/v6) was fixed in 0.3.0: empty ranks are treated as "first" (0) and siblings are stably sorted by `[rank_hex, document-order]`.
+- v6-saved `.ooutline` files currently still declare the v5 XML namespace, so `V5::Parser` handles them as-is. If a future v6 format adopts a real `.../v6` namespace, `oo2text` will need a namespace check to branch parsers.
+- `editors.xml` is read by `V5::Parser` but not currently used.

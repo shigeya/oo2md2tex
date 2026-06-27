@@ -5,7 +5,7 @@ require_relative 'markdown_to_tex/text_processor'
 require_relative 'markdown_to_tex/processor'
 
 #
-#    Copyright (c)2012 Shigeya Suzuki
+#    Copyright (c)2012,2026 Shigeya Suzuki
 #
 #    Permission to use, copy, modify, and/or distribute this software for any
 #    purpose with or without fee is hereby granted, provided that the above
